@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { chercherLieux, contact, heureParis, libelleLieu, lienMarche } from './motis'
+import { chercherLieux, contact, dureeMarche, heureParis, libelleLieu, lienMarche } from './motis'
 import type { Lieu } from './motis'
 import type { Planning } from './planning'
 import { nomIntervention } from './planning'
@@ -13,7 +13,7 @@ function BlocTrajet({ route }: { route: RouteJournee }) {
     <h3>{route.titre}</h3>
     <p className="note">{route.depart} → {route.arrivee}</p>
     {!i ? <p className="avertissement">{route.erreur || 'Trajet non calculé'}</p> : <>
-      <p><strong>{heureParis(i.startTime)} → {heureParis(i.endTime)}</strong> · {Math.ceil(i.duration / 60)} min</p>
+      <p><strong>{heureParis(i.startTime)} → {heureParis(i.endTime)}</strong> · {Math.ceil(i.duration / 60)} min · 🚶 {Math.ceil(dureeMarche(i) / 60)} min</p>
       {route.libreAvant > 0 && <p>☕ Temps libre avant le départ : {minutes(route.libreAvant)}</p>}
       {route.margeArrivee > 0 && <p>⏳ Marge sur place avant l’intervention : {minutes(route.margeArrivee)}</p>}
       {route.retard > 0 && <p className="avertissement">⚠️ Arrivée prévue avec {Math.ceil(route.retard / 60000)} min de retard.</p>}
@@ -134,8 +134,9 @@ function VueJournee({ planning, pointages, jour, surIntervention }: { planning: 
       <li>🏡 Retour à la maison : à calculer</li>
     </ol>}
     <details className="credits-motis"><summary>À propos des trajets</summary>
-      <p>Adresses et coordonnées envoyées à Transitous lors des recherches. Aucun recalcul automatique. Les horaires officiels restent fixes ; les estimations tiennent compte des retards et des pointages choisis.</p>
+      <p>Adresses recherchées via Transitous et, si le numéro manque, via IGN/BAN. Coordonnées et horaires envoyés à Transitous pour les trajets. Aucun recalcul automatique. Les horaires officiels restent fixes ; les estimations tiennent compte des retards et des pointages choisis.</p>
       <p>Louna &amp; Co · calculs MOTIS via <a href="https://transitous.org/" target="_blank" rel="noopener noreferrer">Transitous</a> · Contact : <a href={`mailto:${contact}`}>{contact}</a></p>
+      <p>Adresses : <a href="https://adresse.data.gouv.fr/" target="_blank" rel="noopener noreferrer">Base Adresse Nationale</a> via IGN.</p>
       <p><a href="https://transitous.org/sources/" target="_blank" rel="noopener noreferrer">Sources des transports</a> · © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">contributeurs OpenStreetMap</a></p>
     </details>
   </>

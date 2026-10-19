@@ -54,7 +54,7 @@ export async function calculerJournee(
       const delai = setTimeout(annuler, 30000)
       let resultats: Itineraire[]
       try {
-        resultats = await routeur(de, vers, new Date(reference).toISOString(), i === 0, controle.signal)
+        resultats = await routeur(de, vers, new Date(reference).toISOString(), i === 0, controle.signal, limite)
       } finally {
         clearTimeout(delai)
         signal.removeEventListener('abort', annuler)

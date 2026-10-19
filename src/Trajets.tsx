@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { calculer, chercherLieux, contact, heureParis, instantParis, libelleLieu, lienMarche } from './motis'
+import { calculer, chercherLieux, contact, dureeMarche, heureParis, instantParis, libelleLieu, lienMarche } from './motis'
 import type { Itineraire, Lieu } from './motis'
 import { nomIntervention } from './planning'
 
@@ -35,7 +35,7 @@ function CarteTrajet({ trajet, jour }: { trajet: Trajet; jour: string }) {
         setArrivee(0)
       } else {
         const instant = trajet.reel === undefined ? instantParis(jour, trajet.heure) : new Date(trajet.reel).toISOString()
-        const trouves = await calculer(lieux[0][depart], lieux[1][arrivee], instant, trajet.arriveBy, requete.signal)
+        const trouves = await calculer(lieux[0][depart], lieux[1][arrivee], instant, trajet.arriveBy, requete.signal, limite)
         setResultats(trouves)
       }
     } catch (e) {
@@ -74,7 +74,7 @@ function CarteTrajet({ trajet, jour }: { trajet: Trajet; jour: string }) {
         const retard = limite === undefined ? 0 : Math.max(0, Date.parse(itineraire.endTime) - limite)
         const transport = itineraire.legs.some(l => l.mode !== 'WALK')
         return <details className="resultat-motis" key={index} open={index === 0}>
-          <summary>{transport ? '🚌' : '🚶'} {heureParis(itineraire.startTime)} → {heureParis(itineraire.endTime)} · {Math.ceil(itineraire.duration / 60)} min</summary>
+          <summary>{transport ? '🚌' : '🚶'} {heureParis(itineraire.startTime)} → {heureParis(itineraire.endTime)} · {Math.ceil(itineraire.duration / 60)} min · 🚶 {Math.ceil(dureeMarche(itineraire) / 60)} min</summary>
           {retard > 0 ? <p className="avertissement">⚠️ Retard prévu : {Math.ceil(retard / 60000)} min.</p>
             : limite !== undefined && <p className="succes">✓ À l’heure · marge de {Math.floor((limite - Date.parse(itineraire.endTime)) / 60000)} min.</p>}
           <p>{transport ? `${itineraire.transfers} correspondance(s)` : 'Trajet entièrement à pied'}</p>
@@ -110,6 +110,7 @@ export default function Trajets({ interventions, domicile, selection, pointages 
     { id: 'retour', titre: `${nomIntervention(interventions[interventions.length - 1], interventions.length - 1)} → Maison`, depart: interventions[interventions.length - 1].adresse, arrivee: domicile, heure: interventions[interventions.length - 1].fin, arriveBy: false, reel: finReelle(interventions[interventions.length - 1].id) },
   ]
   return <section>
+    <p className="note">🚶 Moins de marche · jusqu’à 2 min de plus.</p>
     <h2>{selection === undefined ? '🚌 Mes trajets avec MOTIS' : '🚌 Trajet vers cette intervention'}</h2>
     {trajets.filter((_, i) => selection === undefined || i === selection || (selection === interventions.length - 1 && i === interventions.length)).map(t =>
       <CarteTrajet key={JSON.stringify([t.id, jour, t.depart, t.arrivee, t.heure, t.limite, t.reel])} trajet={t} jour={jour} />
@@ -119,6 +120,7 @@ export default function Trajets({ interventions, domicile, selection, pointages 
       <p>Prévisions à vérifier avant le départ. Le temps réel dépend du réseau. Google Maps peut proposer un chemin à pied différent.</p>
       <p>Louna &amp; Co · calculs MOTIS via <a href="https://transitous.org/" target="_blank" rel="noopener noreferrer">Transitous</a>.</p>
       <p>Contact : <a href={`mailto:${contact}`}>{contact}</a></p>
+      <p>Adresses : <a href="https://adresse.data.gouv.fr/" target="_blank" rel="noopener noreferrer">Base Adresse Nationale</a> via IGN.</p>
       <p><a href="https://transitous.org/sources/" target="_blank" rel="noopener noreferrer">Sources des données de transport</a> · © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">contributeurs OpenStreetMap</a></p>
     </details>
   </section>
