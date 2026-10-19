@@ -1,5 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <rect width="64" height="64" rx="18" fill="#f7e5ec"/>
+  <g transform="translate(32 32) scale(0.72) translate(-32 -32)">
   <g fill="#dba1b6">
     <ellipse cx="32" cy="20" rx="9" ry="12"/>
     <ellipse cx="32" cy="20" rx="9" ry="12" transform="rotate(60 32 32)"/>
@@ -9,5 +10,6 @@
     <ellipse cx="32" cy="20" rx="9" ry="12" transform="rotate(300 32 32)"/>
   </g>
   <circle cx="32" cy="32" r="13" fill="#a34365"/>
-  <path d="M28 24v16h11" fill="none" stroke="#fffdfd" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M27.875 26v12h8.25" fill="none" stroke="#fffdfd" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
 </svg>
